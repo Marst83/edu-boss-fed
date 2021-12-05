@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Layout from '@/layout/index.vue'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -14,6 +15,9 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     component: Layout,
+    meta: {
+      requiresAuth: true// 增加路由限制，没有这个属性就不让访问
+    },
     children: [
       {
         path: '', // 默认子路由
@@ -66,6 +70,24 @@ const routes: Array<RouteConfig> = [
 
 const router = new VueRouter({
   routes
+})
+router.beforeEach((to, from, next) => {
+  // to.matched 是一个数组（匹配到的路由记录）
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!store.state.user) {
+      // 跳转到登录页面
+      next({
+        name: 'login',
+        query: { // 通过 url 传递查询字符串参数
+          redirect: to.fullPath // 把登录成功需要返回的页面告诉登录页面
+        }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
