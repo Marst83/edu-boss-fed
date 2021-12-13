@@ -2,58 +2,25 @@
   <div class="resource-list">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-form ref="form" :model="form" label-width="80px" :inline="true">
-          <el-form-item prop="name" label="资源名称">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-          <el-form-item prop="url" label="资源路径">
-            <el-input v-model="form.url"></el-input>
-          </el-form-item>
-          <el-form-item prop="categoryId" label="资源分类">
-            <el-select
-              v-model="form.categoryId"
-              placeholder="请选择资源分类"
-              clearable
-            >
-              <el-option
-                :label="item.name"
-                :value="item.id"
-                v-for="item in resourceCategories"
-                :key="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <div class="btnList">
-          <el-button @click="onSubmit" :disabled="isLoading"
-            >查询搜索</el-button
-          >
-          <el-button @click="onReset" :disabled="isLoading">重置</el-button>
-          <el-button @click="addOrEdit(false)" :disabled="isLoading"
-            >新增</el-button
-          >
-          <el-button :disabled="isLoading" @click="jumpToResourceCategory"
-            >资源分类</el-button
-          >
-        </div>
+        <el-button @click="addOrEdit(false)" :disabled="isLoading"
+          >添加</el-button
+        >
       </div>
       <el-table
-        :data="resources"
+        :data="resourcesCategory"
         style="width: 100%; margin-bottom: 20px"
         v-loading="isLoading"
       >
-        <el-table-column type="index" label="编号" min-width="100">
+        <el-table-column prop="id" label="编号" min-width="100">
         </el-table-column>
-        <el-table-column prop="name" label="资源名称" min-width="180">
+        <el-table-column prop="name" label="名称" min-width="180">
         </el-table-column>
-        <el-table-column prop="url" min-width="180" label="资源路径">
-        </el-table-column>
-        <el-table-column prop="description" min-width="180" label="描述">
-        </el-table-column>
-        <el-table-column min-width="180" prop="createdTime" label="添加时间">
+        <el-table-column prop="createdTime" min-width="180" label="创建时间">
           <template slot-scope="scope">
             {{ scope.row.createdTime | dateFormat }}
           </template>
+        </el-table-column>
+        <el-table-column prop="sort" min-width="180" label="排序">
         </el-table-column>
         <el-table-column min-width="180" label="操作">
           <template slot-scope="scope">
@@ -82,15 +49,14 @@
       </el-pagination>
     </el-card>
     <el-dialog
-      :title="isEdit ? '编辑资源' : '添加资源'"
+      :title="isEdit ? '编辑分类' : '添加分类'"
       :visible.sync="dialogVisible"
       width="30%"
     >
-      <create-or-edit
+      <create-or-edit-category
         v-if="dialogVisible"
         :is-edit="isEdit"
         :visible="dialogVisible"
-        :resourceCategories="resourceCategories"
         :editObj="editObj"
         @success="onSuccess"
         @cancel="dialogVisible = false"
@@ -102,20 +68,19 @@
 <script lang="ts">
 import Vue from 'vue'
 import {
-  getResourcePages,
-  deleteResources,
-  addOrEditResources
-} from '@/services/resource'
-import { getResourceCategories } from '@/services/resource-category'
+  getResourceCategories,
+  deleteResourceCategories,
+  addOrEditResourceCategories
+} from '@/services/resource-category'
 import { Form } from 'element-ui'
-import CreateOrEdit from './CreateOrEdit.vue'
+import CreateOrEditCategory from './CreateOrEditCategory.vue'
 
 export default Vue.extend({
   name: 'ResourceList',
-  components: { CreateOrEdit },
+  components: { CreateOrEditCategory },
   data() {
     return {
-      resources: [], // 资源列表
+      resourcesCategory: [], // 资源列表
       form: {
         name: '',
         url: '',
@@ -133,42 +98,34 @@ export default Vue.extend({
   },
 
   created() {
-    this.loadResources()
     this.loadResourceCategories()
   },
 
   methods: {
     async loadResourceCategories() {
       const { data } = await getResourceCategories()
-      this.resourceCategories = data.data
-    },
-
-    async loadResources() {
-      this.isLoading = true // 展示加载中状态
-      const { data } = await getResourcePages(this.form)
-      this.resources = data.data.records
+      this.resourcesCategory = data.data
       this.totalCount = data.data.total
       this.isLoading = false // 关闭加载中状态
     },
 
     onSubmit() {
       this.form.current = 1 // 筛选查询从第 1 页开始
-      this.loadResources()
     },
 
     handleDelete(item: any) {
-      this.$confirm('确定删除该资源?', '提示', {
+      this.$confirm('确定删除该资源分类?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(async () => {
-          await deleteResources(item.id)
+          await deleteResourceCategories(item.id)
           this.$message({
             type: 'success',
             message: '删除成功!'
           })
-          this.loadResources()
+          this.loadResourceCategories()
         })
         .catch(() => {
           this.$message({
@@ -181,19 +138,19 @@ export default Vue.extend({
     handleSizeChange(val: number) {
       this.form.size = val
       this.form.current = 1 // 每页大小改变重新查询第1页数据
-      this.loadResources()
+      this.loadResourceCategories()
     },
 
     handleCurrentChange(val: number) {
       this.form.current = val // 修改要查询的页码
-      this.loadResources()
+      this.loadResourceCategories()
     },
 
     onReset() {
       const form = this.$refs.form as Form
       form.resetFields()
       this.form.current = 1 // 重置回到第1页
-      this.loadResources()
+      this.loadResourceCategories()
     },
 
     addOrEdit(flag: boolean, row: any) {
@@ -205,14 +162,10 @@ export default Vue.extend({
     },
 
     async onSuccess(param: any) {
-      await addOrEditResources(param)
+      await addOrEditResourceCategories(param)
       this.$message.success('操作成功')
       this.dialogVisible = false // 关闭对话框
-      this.loadResources() // 重新加载数据列表
-    },
-
-    jumpToResourceCategory() {
-      this.$router.push({ name: 'resourceCategory' })
+      this.loadResourceCategories() // 重新加载数据列表
     }
   }
 })

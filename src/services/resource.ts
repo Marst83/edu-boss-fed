@@ -19,6 +19,21 @@ export const getAllResources = () => {
   })
 }
 
+export const deleteResources = (id:number) => {
+  return request({
+    method: 'DELETE',
+    url: `/boss/resource/${id}`
+  })
+}
+
+export const addOrEditResources = (data: any) => {
+  return request({
+    method: 'POST',
+    url: '/boss/resource/saveOrUpdate',
+    data
+  })
+}
+
 export const allocateRoleResources = (data: any) => {
   return request({
     method: 'POST',
