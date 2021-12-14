@@ -20,7 +20,11 @@
         <el-table-column prop="id" label="编号" />
         <el-table-column prop="name" label="角色名称" />
         <el-table-column prop="description" label="描述" />
-        <el-table-column prop="createdTime" label="添加时间" />
+        <el-table-column prop="createdTime" label="添加时间">
+          <template slot-scope="scope">
+            {{ scope.row.createdTime | dateFormat }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" width="150px">
           <template slot-scope="scope">
             <div>
@@ -64,26 +68,22 @@
         </el-table-column>
       </el-table>
     </el-card>
-
-    <el-dialog
-      :title="isEdit ? '编辑角色' : '添加角色'"
-      :visible.sync="dialogVisible"
-      width="50%"
-    >
-      <create-or-edit
-        v-if="dialogVisible"
-        :role-id="roleId"
-        :is-edit="isEdit"
-        @success="onSuccess"
-        @cancel="dialogVisible = false"
-      />
-    </el-dialog>
+    <create-or-edit
+      v-if="dialogVisible.show"
+      :role-id="roleId"
+      :isEdit="isEdit"
+      :dialogVisible="dialogVisible"
+      :editObj="editObj"
+      :dialogRules="dialogRules"
+      @success="onSuccess"
+      @cancel="dialogVisible.show = false"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { getRoles, deleteRole } from '@/services/role'
+import { getRoles, deleteRole, createOrUpdate } from '@/services/role'
 import { Form } from 'element-ui'
 import CreateOrEdit from './CreateOrEdit.vue'
 
@@ -101,9 +101,19 @@ export default Vue.extend({
         name: ''
       }, // 查询条件
       loading: false,
-      dialogVisible: false, // 控制添加/编辑角色的对话框显示和隐藏
+      dialogVisible: {
+        show: false
+      },
       roleId: null, // 编辑角色的 ID
-      isEdit: false
+      isEdit: false,
+      editObj: {},
+      dialogRules: {
+        name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
+        code: [{ required: true, message: '请输入角色编码', trigger: 'blur' }],
+        description: [
+          { required: true, message: '请输入角色描述', trigger: 'blur' }
+        ]
+      }
     }
   },
 
@@ -124,8 +134,8 @@ export default Vue.extend({
     },
 
     handleEdit(role: any) {
-      this.dialogVisible = true
-      this.roleId = role.id
+      this.dialogVisible.show = true
+      this.editObj = JSON.parse(JSON.stringify(role))
       this.isEdit = true
     },
 
@@ -150,14 +160,16 @@ export default Vue.extend({
       this.loadRoles()
     },
 
-    onSuccess() {
-      this.dialogVisible = false // 关闭对话框
+    async onSuccess(param: any) {
+      await createOrUpdate(param)
+      this.$message.success('操作成功')
+      this.dialogVisible.show = false // 关闭对话框
       this.loadRoles() // 重新加载数据列表
     },
 
     handleAdd() {
       this.isEdit = false
-      this.dialogVisible = true
+      this.dialogVisible.show = true
     }
   }
 })

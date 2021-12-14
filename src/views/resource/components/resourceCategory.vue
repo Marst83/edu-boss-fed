@@ -48,20 +48,15 @@
       >
       </el-pagination>
     </el-card>
-    <el-dialog
-      :title="isEdit ? '编辑分类' : '添加分类'"
-      :visible.sync="dialogVisible"
-      width="30%"
-    >
-      <create-or-edit-category
-        v-if="dialogVisible"
-        :is-edit="isEdit"
-        :visible="dialogVisible"
-        :editObj="editObj"
-        @success="onSuccess"
-        @cancel="dialogVisible = false"
-      />
-    </el-dialog>
+    <create-or-edit-category
+      v-if="dialogVisible.show"
+      :isEdit="isEdit"
+      :dialogVisible="dialogVisible"
+      :editObj="editObj"
+      :dialogRules="dialogRules"
+      @success="onSuccess"
+      @cancel="dialogVisible.show = false"
+    />
   </div>
 </template>
 
@@ -91,9 +86,15 @@ export default Vue.extend({
       totalCount: 0,
       resourceCategories: [], // 资源分类列表
       isLoading: true, // 加载状态
-      dialogVisible: false,
+      dialogVisible: {
+        show: false
+      },
       isEdit: false,
-      editObj: {}
+      editObj: {},
+      dialogRules: {
+        name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
+        sort: [{ required: true, message: '请输入排序', trigger: 'blur' }]
+      }
     }
   },
 
@@ -155,16 +156,16 @@ export default Vue.extend({
 
     addOrEdit(flag: boolean, row: any) {
       this.isEdit = flag
-      this.dialogVisible = true
+      this.dialogVisible.show = true
       if (row) {
-        this.editObj = row
+        this.editObj = JSON.parse(JSON.stringify(row))
       }
     },
 
     async onSuccess(param: any) {
       await addOrEditResourceCategories(param)
       this.$message.success('操作成功')
-      this.dialogVisible = false // 关闭对话框
+      this.dialogVisible.show = false // 关闭对话框
       this.loadResourceCategories() // 重新加载数据列表
     }
   }
