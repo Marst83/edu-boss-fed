@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="200px">
+    <el-aside width="200px" class="sidebar">
       <app-aside />
     </el-aside>
     <el-container>
@@ -45,5 +45,16 @@ export default Vue.extend({
 
 .el-main {
   background: #e9eef3;
+}
+.sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  background-color: #f8f9fb;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>
