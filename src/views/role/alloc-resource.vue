@@ -10,6 +10,7 @@
         node-key="id"
         :props="defaultProps"
         show-checkbox
+        default-expand-all
         :default-checked-keys="defaultCheckedKeys"
         :default-expanded-keys="defaultCheckedKeys"
       ></el-tree>
