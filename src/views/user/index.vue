@@ -129,14 +129,7 @@ export default Vue.extend({
       roleId: 0, // 编辑角色的 ID
       isEdit: false,
       roles: [],
-      roleIdList: [],
-      dialogRules: {
-        name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
-        code: [{ required: true, message: '请输入角色编码', trigger: 'blur' }],
-        description: [
-          { required: true, message: '请输入角色描述', trigger: 'blur' }
-        ]
-      }
+      roleIdList: []
     }
   },
 
@@ -170,20 +163,6 @@ export default Vue.extend({
       }
     },
 
-    async handleDelete(role: any) {
-      try {
-        await this.$confirm(`确认删除角色：${role.name}？`, '删除提示')
-        this.$message.success('删除成功')
-        this.loadUserPages()
-      } catch (error) {
-        if (error) {
-          this.$message.error('删除失败，请重试')
-        } else {
-          this.$message.info('取消删除')
-        }
-      }
-    },
-
     onReset() {
       const form = this.$refs.form as Form
       form.resetFields()
@@ -196,12 +175,6 @@ export default Vue.extend({
         createTime: ''
       }
       this.loadUserPages()
-    },
-
-    async onSuccess(param: any) {
-      this.$message.success('操作成功')
-      this.dialogVisible.show = false // 关闭对话框
-      this.loadUserPages() // 重新加载数据列表
     },
 
     handleSizeChange(val: number) {
@@ -230,7 +203,7 @@ export default Vue.extend({
     },
 
     async handleAllocRole() {
-      const { data } = await allocateUserRoles({
+      await allocateUserRoles({
         userId: this.roleId,
         roleIdList: this.roleIdList
       })
