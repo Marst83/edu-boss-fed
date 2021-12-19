@@ -130,7 +130,7 @@
           </template>
         </div>
         <div v-show="activeStep === 4">
-          <el-form-item label="课程详情">
+          <el-form-item label="课程详情" class="courseDetail">
             <text-editor v-model="course.courseDescriptionMarkDown" />
             <!-- <el-input v-model="course.courseDescriptionMarkDown" type="textarea"></el-input> -->
           </el-form-item>
@@ -235,12 +235,14 @@ export default Vue.extend({
     async loadCourse() {
       const { data } = await getCourseById(this.courseId)
       const { activityCourseDTO } = data.data
-      activityCourseDTO.beginTime = dayjs(activityCourseDTO.beginTime).format(
-        'YYYY-MM-DD'
-      )
-      activityCourseDTO.endTime = dayjs(activityCourseDTO.endTime).format(
-        'YYYY-MM-DD'
-      )
+      if (activityCourseDTO) {
+        activityCourseDTO.beginTime = dayjs(activityCourseDTO.beginTime).format(
+          'YYYY-MM-DD'
+        )
+        activityCourseDTO.endTime = dayjs(activityCourseDTO.endTime).format(
+          'YYYY-MM-DD'
+        )
+      }
       this.course = data.data
     },
 
@@ -263,5 +265,8 @@ export default Vue.extend({
 }
 ::v-deep .el-form-item__content {
   width: 500px;
+}
+::v-deep .courseDetail .el-form-item__content {
+  width: auto;
 }
 </style>

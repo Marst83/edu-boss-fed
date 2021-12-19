@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts">
+import { uploadCourseImage } from '@/services/course'
 import Vue from 'vue'
 import E from 'wangeditor'
 
@@ -25,9 +26,16 @@ export default Vue.extend({
       editor.config.onchange = (value: string) => {
         this.$emit('input', value)
       }
+      editor.config.customUploadImg = async (
+        resultFiles: any,
+        insertImgFn: any
+      ) => {
+        const fd = new FormData()
+        fd.append('file', resultFiles[0])
+        const { data } = await uploadCourseImage(fd)
+        insertImgFn(data.data.name)
+      }
       editor.create()
-
-      // 注意：设置初始化必须在 create 之后
       editor.txt.html(this.value)
     }
   }

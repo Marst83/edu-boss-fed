@@ -22,7 +22,7 @@ const routes: Array<RouteConfig> = [
       {
         path: '', // 默认子路由
         name: 'home',
-        component: () => import(/* webpackChunkName: 'home' */ '@/views/home/index.vue')
+        component: () => import(/* webpackChunkName: 'course' */ '@/views/course/index.vue')
       },
       {
         path: '/role',
@@ -33,11 +33,6 @@ const routes: Array<RouteConfig> = [
         path: '/menu',
         name: 'menu',
         component: () => import(/* webpackChunkName: 'menu' */ '@/views/menu/index.vue')
-      },
-      {
-        path: '/resource',
-        name: 'resource',
-        component: () => import(/* webpackChunkName: 'resource' */ '@/views/resource/index.vue')
       },
       {
         path: '/course',

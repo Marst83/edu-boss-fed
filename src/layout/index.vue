@@ -2,11 +2,17 @@
   <el-container>
     <el-aside width="200px" class="sidebar">
       <div class="aside">
+        <span
+          @click="logoClick"
+          aria-current="page"
+          class="logo router-link-exact-active router-link-active"
+          title="回到首页"
+          ><img :src="require('@/assets/logo.png')" alt="LagouEdu" />
+          <h1>Edu Boss</h1></span
+        >
         <el-menu
           default-active="4"
-          background-color="#545c64"
-          text-color="#fff"
-          active-text-color="#ffd04b"
+          background-color="#f8f9fb"
           router
           @select="handleMenuSelect"
         >
@@ -34,8 +40,8 @@
       </div>
     </el-aside>
     <el-container>
-      <el-header>
-        <app-header :breadcrumbList="breadcrumbList" />
+      <el-header class="navbar">
+        <app-header :breadcrumbList="breadcrumbList" @handChange="handChange" />
       </el-header>
       <el-main>
         <!-- 子路由出口 -->
@@ -115,13 +121,21 @@ export default Vue.extend({
     handleMenuSelect(index: string, indexPath: Array<string>) {
       this.indexBreadcrumbs = indexPath
     },
-    handChange() {
+    handChange(flag: boolean) {
+      if (flag) {
+        this.indexBreadcrumbs = ['/course']
+      }
       this.$emit('hand-change', this.breadcrumbList)
+    },
+    logoClick() {
+      if (this.$route.name === 'home') return
+      this.$router.push({ name: 'home' })
+      this.indexBreadcrumbs = ['/course']
     }
   },
   watch: {
     $route() {
-      this.handChange()
+      this.handChange(false)
     }
   },
   computed: {
@@ -172,9 +186,29 @@ export default Vue.extend({
   -ms-user-select: none;
   user-select: none;
 }
-.aside {
-  .el-menu {
-    min-height: 100vh;
-  }
+.sidebar .logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  text-align: center;
+  color: #495057;
+  cursor: pointer;
+}
+.sidebar .logo:hover {
+  color: #343a40;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.sidebar .logo img {
+  margin: 10px;
+  width: 30px;
+}
+.navbar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 !important;
+  background-color: #f8f9fb;
 }
 </style>

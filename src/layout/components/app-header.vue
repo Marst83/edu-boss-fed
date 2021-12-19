@@ -1,7 +1,9 @@
 <template>
   <div class="header">
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item class="home" @click.native="breadcrumbToHome"
+        >首页</el-breadcrumb-item
+      >
       <el-breadcrumb-item
         v-for="(item, index) in breadcrumbList"
         :key="index"
@@ -76,6 +78,12 @@ export default Vue.extend({
             message: '已取消退出'
           })
         })
+    },
+    breadcrumbToHome() {
+      debugger
+      if (this.$route.name === 'home') return
+      this.$router.push({ name: 'home' })
+      this.$emit('handChange', true)
     }
   }
 })
@@ -90,6 +98,9 @@ export default Vue.extend({
   .el-dropdown-link {
     display: flex;
     align-items: center;
+  }
+  .home {
+    cursor: pointer;
   }
 }
 </style>
