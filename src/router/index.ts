@@ -45,16 +45,6 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: 'user' */ '@/views/user/index.vue')
       },
       {
-        path: '/advert',
-        name: 'advert',
-        component: () => import(/* webpackChunkName: 'advert' */ '@/views/advert/index.vue')
-      },
-      {
-        path: '/advert-space',
-        name: 'advert-space',
-        component: () => import(/* webpackChunkName: 'advert-space' */ '@/views/advert-space/index.vue')
-      },
-      {
         path: '/menu/create',
         name: 'menu-create',
         component: () => import(/* webpackChunkName: 'menu-create-edit' */ '@/views/menu/create.vue')
@@ -101,6 +91,12 @@ const routes: Array<RouteConfig> = [
         path: '/course/:courseId/section',
         name: 'course-section',
         component: () => import(/* webpackChunkName: 'course-section' */ '@/views/course/section.vue'),
+        props: true
+      },
+      {
+        path: '/course/:courseId/video',
+        name: 'course-video',
+        component: () => import(/* webpackChunkName: 'course-video' */ '@/views/course/video.vue'),
         props: true
       }
     ]

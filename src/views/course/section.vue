@@ -3,6 +3,7 @@
     <!-- 阶段列表 -->
     <el-card>
       <div class="card-header" slot="header">
+        <el-button @click="$router.back()">返回课程列表</el-button>
         {{ course.courseName }}
         <el-button type="primary" @click="handleShowAddSection"
           >添加阶段</el-button
@@ -42,7 +43,25 @@
             <el-button @click="handleShowEditLesson(data, node.parent.data)"
               >编辑</el-button
             >
-            <el-button type="success">上传视频</el-button>
+            <el-button
+              type="success"
+              @click="
+                $router.push({
+                  name: 'course-video',
+                  params: {
+                    courseId,
+                    courseName: course.courseName,
+                    sectionName: data.sectionName,
+                    theme: data.theme
+                  },
+                  query: {
+                    sectionId: node.parent.id,
+                    lessonId: data.id
+                  }
+                })
+              "
+              >上传视频</el-button
+            >
             <el-select
               class="select-status"
               v-model="data.status"
@@ -246,7 +265,6 @@ export default Vue.extend({
     },
 
     handleShowAddLesson(data: any) {
-      console.log(data)
       this.lesson = {
         sectionName: data.sectionName,
         sectionId: data.id,
