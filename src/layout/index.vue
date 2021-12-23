@@ -94,6 +94,23 @@ export default Vue.extend({
           path: '/user',
           className: 'el-icon-document',
           name: '用户管理'
+        },
+        {
+          path: '广告管理',
+          name: '广告管理',
+          className: 'el-icon-location',
+          child: [
+            {
+              path: '/advert',
+              className: 'el-icon-setting',
+              name: '广告列表'
+            },
+            {
+              path: '/advert-space',
+              className: 'el-icon-setting',
+              name: '广告位列表'
+            }
+          ]
         }
       ],
       indexBreadcrumbs: [''],
