@@ -30,7 +30,7 @@ export default Vue.extend({
   data() {
     return {
       form: {
-        name: 1
+        name: ''
       },
       name: '1',
       dialogRules: {
@@ -55,7 +55,7 @@ export default Vue.extend({
         await this.$confirm('确认提交？', '提示')
         await (this.$refs.form as Form).validate()
         await saveOrUpdate(this.form)
-        this.$router.back()
+        this.$router.push({ name: 'addAdvertise' })
       } catch (error) {
         if (error === 'cancel') {
           this.$message.info('取消操作')
@@ -66,7 +66,7 @@ export default Vue.extend({
       }
     },
     reset() {
-      console.log(1)
+      const r = (this.$refs.form as Form).resetFields()
     }
   }
 })

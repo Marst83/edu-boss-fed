@@ -137,7 +137,16 @@ export default Vue.extend({
     },
 
     edit(row: any) {
-      console.log(row)
+      const editObj = JSON.parse(JSON.stringify(row))
+      const spaceList = JSON.parse(JSON.stringify(this.spaceList))
+      this.$router.push({
+        name: 'addAdvertise',
+        params: {
+          editObj,
+          isEdit: '1',
+          spaceList
+        }
+      })
     }
   }
 })

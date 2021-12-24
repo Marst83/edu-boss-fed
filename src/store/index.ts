@@ -5,9 +5,13 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    isCollapse: false,
     user: JSON.parse(window.localStorage.getItem('user') || 'null')
   },
   mutations: {
+    setIsCollapse (state, payload) {
+      state.isCollapse = payload
+    },
     setUser (state, payload) {
       state.user = JSON.parse(payload)
 

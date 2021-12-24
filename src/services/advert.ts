@@ -17,3 +17,11 @@ export const updateStatus = (id:number, status: number) => {
     }
   })
 }
+
+export const saveOrUpdate = (data: any) => {
+  return request({
+    method: 'POST',
+    url: '/front/ad/saveOrUpdate',
+    data
+  })
+}

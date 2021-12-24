@@ -1,59 +1,58 @@
 <template>
   <div>
     <el-card class="addOrAddAdvert">
-      <el-form :rules="dialogRules" ref="form" label-width="100px">
-        <el-form-item label="广告名称：" prop="">
-          <el-input></el-input>
+      <el-form
+        :rules="dialogRules"
+        ref="form"
+        label-width="120px"
+        :model="form"
+      >
+        <el-form-item label="广告名称：" prop="name">
+          <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="广告位置：" prop="">
-          <el-input></el-input>
+        <el-form-item label="广告位置：" prop="spaceId">
+          <el-select v-model="form.spaceId" placeholder="请选择">
+            <el-option
+              v-for="item in spaceList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="开始时间：" prop="">
+        <el-form-item label="开始时间：" prop="startTime">
           <el-date-picker
-            v-model="value1"
+            v-model="form.startTime"
             type="datetime"
             placeholder="选择日期时间"
           >
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="结束时间：" prop="">
+        <el-form-item label="结束时间：" prop="endTime">
           <el-date-picker
-            v-model="value2"
+            v-model="form.endTime"
             type="datetime"
             placeholder="选择日期时间"
           >
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="上线/下线：" prop="">
-          <el-radio v-model="radio" label="1">上线</el-radio>
-          <el-radio v-model="radio" label="2">下线</el-radio>
+        <el-form-item label="上线/下线：" prop="status">
+          <el-radio v-model="form.status" :label="1">上线</el-radio>
+          <el-radio v-model="form.status" :label="0">下线</el-radio>
         </el-form-item>
         <el-form-item label="广告图片：" prop="">
-          <el-upload
-            action="#"
-            list-type="picture-card"
-            :auto-upload="false"
-            :show-file-list="false"
-          >
-            <i slot="default" class="el-icon-plus"></i>
-            <div slot="file" slot-scope="{ file }" v-if="file">
-              <img
-                class="el-upload-list__item-thumbnail"
-                :src="file.url"
-                alt=""
-              />
-            </div>
-          </el-upload>
+          <course-image v-model="form.img" />
         </el-form-item>
-        <el-form-item label="广告链接：" prop="">
-          <el-input></el-input>
+        <el-form-item label="广告链接：" prop="link">
+          <el-input v-model="form.link"></el-input>
         </el-form-item>
-        <el-form-item label="广告备注" prop="">
-          <el-input type="textarea"></el-input>
+        <el-form-item label="广告备注" prop="text">
+          <el-input type="textarea" v-model="form.text"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button @click="$emit('cancel')">取消</el-button>
-          <el-button type="primary" @click="onSubmit">确认</el-button>
+          <el-button type="primary" @click="onSubmit">提交</el-button>
+          <el-button @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -63,48 +62,71 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Form } from 'element-ui'
+import { saveOrUpdate } from '@/services/advert'
+import CourseImage from '../course/components/CourseImage.vue'
 
 export default Vue.extend({
   name: 'CreateOrEditRole',
-  props: {
-    editObj: {
-      type: Object
-    },
-    dialogRules: {
-      type: Object
-    }
+  props: ['editObj', 'isEdit', 'spaceList'],
+  components: {
+    CourseImage
   },
   data() {
     return {
-      advert: {
-        code: '',
+      form: {
+        id: '',
         name: '',
-        description: ''
+        spaceId: 0,
+        startTime: '',
+        endTime: '',
+        status: 0,
+        img: '',
+        link: '',
+        text: '',
+        sort: 0
       },
-      value1: '',
-      value2: '',
-      radio: ''
+      dialogRules: {
+        name: [{ required: true, message: '请输入广告名称', trigger: 'blur' }],
+        startTime: [
+          { required: true, message: '请输入开始时间', trigger: 'blur' }
+        ],
+        endTime: [
+          { required: true, message: '请输入结束时间', trigger: 'blur' }
+        ],
+        link: [{ required: true, message: '请输入广告名称', trigger: 'blur' }]
+      }
     }
   },
 
   created() {
     // 如果是编辑操作，则根据角色 ID 加载展示角色信息
-    this.loadRole()
+    if (this.isEdit === '1') {
+      this.loadRole()
+    }
   },
 
   methods: {
     loadRole() {
-      this.advert = this.editObj
+      this.form = this.editObj
     },
-
     async onSubmit() {
       try {
+        await this.$confirm('确认提交？', '提示')
         await (this.$refs.form as Form).validate()
-        this.$emit('success', this.advert)
+        await saveOrUpdate(this.form)
+        this.$message.info('操作成功')
+        this.$router.push({ name: 'advert' })
       } catch (error) {
-        this.$message.error('提交失败')
-        console.log(error)
+        if (error === 'cancel') {
+          this.$message.info('取消操作')
+        } else {
+          this.$message.error('操作失败')
+          console.log(error)
+        }
       }
+    },
+    reset() {
+      const r = (this.$refs.form as Form).resetFields()
     }
   }
 })

@@ -1,26 +1,28 @@
 <template>
   <el-container>
-    <el-aside width="200px" class="sidebar">
+    <el-aside class="sidebar">
       <div class="aside">
-        <span
-          @click="logoClick"
-          aria-current="page"
-          class="logo router-link-exact-active router-link-active"
-          title="回到首页"
-          ><img :src="require('@/assets/logo.png')" alt="LagouEdu" />
-          <h1>Edu Boss</h1></span
-        >
         <el-menu
+          class="el-menu-vertical-demo"
           default-active="4"
           background-color="#f8f9fb"
           router
           @select="handleMenuSelect"
+          :collapse="isCollapse"
         >
+          <span
+            @click="logoClick"
+            aria-current="page"
+            class="logo router-link-exact-active router-link-active"
+            title="回到首页"
+            ><img :src="require('@/assets/logo.png')" alt="LagouEdu" />
+            <h1 v-if="!isCollapse">Edu Boss</h1></span
+          >
           <div v-for="(menu, index) in menuList" :key="index">
             <el-submenu :index="menu.path" v-if="menu.child">
               <template slot="title">
                 <i class="el-icon-location"></i>
-                <span>{{ menu.name }}</span>
+                <span v-if="!isCollapse">{{ menu.name }}</span>
               </template>
               <el-menu-item
                 :index="item.path"
@@ -54,6 +56,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import AppHeader from './components/app-header.vue'
+import { mapState } from 'vuex'
 
 export default Vue.extend({
   name: 'LayoutIndex',
@@ -139,6 +142,7 @@ export default Vue.extend({
     }
   },
   computed: {
+    ...mapState(['isCollapse']),
     breadcrumbList() {
       const breadcrumb: any = []
       let menuList = JSON.parse(JSON.stringify(this.menuList))
@@ -179,6 +183,7 @@ export default Vue.extend({
   position: -webkit-sticky;
   position: sticky;
   top: 0;
+  width: auto !important;
   max-height: 100vh;
   background-color: #f8f9fb;
   -webkit-user-select: none;
@@ -210,5 +215,12 @@ export default Vue.extend({
   z-index: 100;
   padding: 0 !important;
   background-color: #f8f9fb;
+}
+.el-menu-vertical-demo {
+  border-right: none;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
 }
 </style>

@@ -1,15 +1,21 @@
 <template>
   <div class="header">
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item class="home" @click.native="breadcrumbToHome"
-        >首页</el-breadcrumb-item
-      >
-      <el-breadcrumb-item
-        v-for="(item, index) in breadcrumbList"
-        :key="index"
-        >{{ item.name }}</el-breadcrumb-item
-      >
-    </el-breadcrumb>
+    <div class="leftHeader">
+      <el-button class="hamburger" type="text" @click="handleCollapse">
+        <i :class="!isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'" />
+      </el-button>
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item class="home" @click.native="breadcrumbToHome"
+          >首页</el-breadcrumb-item
+        >
+        <el-breadcrumb-item
+          v-for="(item, index) in breadcrumbList"
+          :key="index"
+          >{{ item.name }}</el-breadcrumb-item
+        >
+      </el-breadcrumb>
+    </div>
+
     <el-dropdown>
       <span class="el-dropdown-link">
         <el-avatar
@@ -32,6 +38,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { getUserInfo } from '@/services/user'
+import { mapState } from 'vuex'
 
 export default Vue.extend({
   name: 'AppHeader',
@@ -47,6 +54,9 @@ export default Vue.extend({
   },
   created() {
     this.loadUserInfo()
+  },
+  computed: {
+    ...mapState(['isCollapse'])
   },
   methods: {
     async loadUserInfo() {
@@ -84,6 +94,9 @@ export default Vue.extend({
       if (this.$route.name === 'home') return
       this.$router.push({ name: 'home' })
       this.$emit('handChange', true)
+    },
+    handleCollapse() {
+      this.$store.commit('setIsCollapse', !this.isCollapse)
     }
   }
 })
@@ -101,6 +114,33 @@ export default Vue.extend({
   }
   .home {
     cursor: pointer;
+  }
+  .leftHeader {
+    display: flex;
+    i {
+      cursor: pointer;
+      padding-right: 10px;
+      width: 26px;
+    }
+    .hamburger {
+      margin-right: 10px;
+      padding: 15px;
+      font-size: 20px;
+      border: 0;
+      border-radius: 0;
+    }
+    .hamburger:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+  .el-breadcrumb {
+    line-height: 3.5;
+  }
+  .el-button--text:focus,
+  .el-button--text:hover {
+    color: #66798c;
+    border-color: transparent;
+    background-color: transparent;
   }
 }
 </style>
